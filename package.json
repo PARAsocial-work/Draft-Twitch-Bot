@@ -1,6 +1,6 @@
 {
   "name": "draft-twitch-bot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,10 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "author": "Para of PARAsocial_work - PARAsocial-work on Github",
+  "author": {
+    "name": "Para of PARAsocial_work",
+    "url": "https://github.com/PARAsocial-work"
+  },
   "license": "MIT",
   "dependencies": {
     "@twurple/api": "^7.0.7",
