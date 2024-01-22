@@ -10,7 +10,7 @@ The goal of this project is having a twitch bot which listens to chat, as well a
 
 This code is excluding the aesthetic side of things - it's just all about getting feedback on how I'm making it function.
 
-Console messages now now are what will go to a lil prettyified browser source window for me to read during stream.
+Console messages now are placeholders for what will go to a lil prettyified browser source window for me to read during stream.
 
 My plan is to hold chat messages on a top 'chat' box, and anon whispers in a bottom 'anons' box. 
 
