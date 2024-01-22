@@ -161,11 +161,8 @@
 		
 		//Placeholder for echoing into my anon window
 		console.log("ANON MSG: " + userx + " - " + y);
-		
-		
+				
 		//Before putting anon message into chat, it checks if anon has been muted
-		console.log("Muted Anons List - " + String(mutedanons));
-		
 		if (mutedanons.includes(userx) === false){
 			//First time an anon messages for the night, it adds the user to an array of tonight's anons
 			if (tonightsanons.includes(userx) != true){
