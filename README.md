@@ -5,7 +5,7 @@ A first draft for a Twitch Bot with anon whisper functionality
 Drafted by Para of https://twitch.tv/PARAsocial_work
 
 
-The goal of this project is having a twitch bot which listens to chat, as well as listening to whispers. 
+The goal of this project is having a twitch bot which listens to chat, as well as listening to whispers - and importantly enables quasi-anonymous message functionality. 
 
 
 This code is excluding the aesthetic side of things - it's just all about getting feedback on how I'm making it function.
