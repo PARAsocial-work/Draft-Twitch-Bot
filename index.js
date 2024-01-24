@@ -96,24 +96,39 @@
 //
 //
 // Scrambling nicknames
-function scramble(str) {
-    // salt
-    str += Math.random().toString(16).slice(2, 8);
-    // djb2
-    let hash = str.split('').map((s) => {
+function scramble(username) {
+    // salt. could be a pepper -- just move somewhere outside
+	const salt = Array.from({length: 64}, () => {
+		// 37 == twitch usernames can have lowercase a-z, 0-9 and _
+		// making value 0 into '_' is just easier
+		let i = Math.floor(Math.random() * 37);
+		if (!i) return '_';
+		i -= 1;
+		if (i < 10) return String.fromCharCode(i + 0x30); // 0x30 == char '0'
+		i -= 10;
+		return String.fromCharCode(i + 0x61); // 0x61 == char 'a'
+	}).join('');
+
+	const salted = salt.slice(0, salt.length - username.length) + username
+    // hashing with djb2
+	// NOTE: this impl is not compatible with ones done in other languages due to how JS handles numbers
+    const hash_raw = salted.split('').map((s) => {
         return s.charCodeAt(0);
     }).reduce((e, a) => {
-        return ((e << 5) + e) + a;
+        return (e << 5) + e + a;
     }, 5381);
-    // need only about 3 bytes (also no negative sign)
-    hash = hash & 0xffffff;
-    let letter = String.fromCharCode(hash % 26 + 65); // 65 == 'A'
+    // making it 32 bits and preventing neg sign
+    let hash = hash_raw & 0xffffffff + 0x80000000;
+    console.log(hash.toString(16).padStart(8, '0'));
+
+    // generating anon name
+    const letter = String.fromCharCode(hash % 26 + 65); // 65 == 'A'
     hash = Math.floor(hash / 26);
-	// TODO: maybe load word list from config at init stage? if so, revisit hash being ANDed with 0xffffff
+	// TODO: maybe load word list from config at init stage?
     const words = ["Ace", "Aloe", "Apple", "Aura", "Beach", "Berry", "Blank", "Blue", "Book", "Busk", "Chess", "Chip", "Clay", "Cloud", "Cocoa", "Coral", "Crow", "Dash", "Deer", "Dive", "Draw", "Easel", "East", "Etch", "Expo", "Felt", "Film", "Foam", "Font", "Gale", "Gecko", "Grain", "Grape", "Grey", "Harp", "Hazel", "Heat", "Hive", "Honey", "Hour", "Iced", "Idea", "Indie", "Jade", "Jam", "Jazz", "Kiln", "Kite", "Kiwi", "Kola", "Lane", "Leaf", "Light", "Link", "Lute", "Mail", "Mana", "Mast", "Moss", "Music", "Nano", "Nemo", "Neon", "Noon", "One", "Open", "Opal", "Orange", "Paint", "Palm", "Park", "Parka", "Petal", "Piano", "Purple", "Quay", "Quip", "Rain", "Read", "Reef", "Ring", "River", "Roll", "Sand", "Satin", "Scout", "Snow", "Spin", "Staff", "Study", "Swim", "Tale", "Toast", "Tundra", "Tune", "Uses", "Vase", "Villa", "Viola", "Wind", "Wood"];
-    let word = words[hash % words.length];
+    const word = words[hash % words.length];
     hash = Math.floor(hash / words.length);
-    let num = (hash % 100).toString();
+    const num = (hash % 100).toString();
     // hash = Math.floor(hash / 100);
     return letter + "-" + word + num
 }
