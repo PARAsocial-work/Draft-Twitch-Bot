@@ -41,4 +41,3 @@ describe("uses environment variable", () => {
         }
     })
 })
-
