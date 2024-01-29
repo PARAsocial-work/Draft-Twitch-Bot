@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="#">
+<title>Browser Source</title>
+	
+
+<!-- Stylesheet didnt work so pasting style in here -->
+<style>
+  body { margin: 0; padding-bottom: 3rem; font-family: comfortaa; background-color: #bbe589;}
+
+	.bodygrid {width: 540px; height: 88%; margin: 14px 10px; background-color: transparent; position: absolute; display: grid; grid-template-columns: 60% 40%; grid-template-rows: 55% 40% 10%; grid-gap: 16px}
+	
+	.boxcommon{width: 100%; height: 100%; background-color: rgba(255,255,255,0.40); border-radius: 10px}
+
+	.chatbox {grid-column: 1/3;grid-row: 1/2;}
+
+	.chatboxinner {display: grid; grid-gap: 12px; align-content: flex-start; width: auto; height: 92%; overflow-x: hidden; overflow-y: scroll; margin: 24px 12px}
+
+	.chatboxitem {display: grid; position: relative; grid-template-columns: 50% 50%; grid-template-rows: 12px 12px auto; margin-bottom: 0px}
+	
+	.chatboxitemname{width: auto; height: auto; line-height: 24px; grid-row: 1 / 3; grid-column: 1 / 3; position: absolute; top: 0px; z-index: 2000; font-family: comfortaa; font-weight: 800; font-size: 16px; padding: 2px 8px; color: #fff; border-radius: 16px}
+
+	.chatboxitemnamec1{background-color: #5d5667}
+	.chatboxitemnamec2{background-color: #726783}
+	.chatboxitemnamec3{background-color: #87779e}
+	.chatboxitemnamec4{background-color: #50495a}
+
+	.namespan{padding: 0px 6px}
+
+	.pronounspan{line-height: 22px; font-weight: 400; font-size: 14px; padding: 0px 6px 0px 0px}
+
+	.chatboxitemtext{position: relative; max-width: 89%; min-width: 80%; left: 7%; top: 12px; height: auto; grid-row: 2 / 4; grid-column: 1 / 3; background-color: #fff; font-family: comfortaa; font-size: 14px; padding: 8px 12px; color: #000; border-radius: 6px; overflow-x: hidden; overflow-y: auto}
+ 
+	.anonbox {grid-column: 1/2; grid-row: 2/3}
+
+	.anonboxinner {display: grid; grid-gap: 12px; align-content: flex-start; width: auto; height: 90%; overflow-x: hidden; overflow-y: scroll; margin: 24px 12px}
+
+	.anonboxitemtext{position: relative; max-width: 84%; min-width: 74%; left: 7%; top: 12px; height: auto; grid-row: 2 / 4; grid-column: 1 / 3; background-color: #fff; font-family: comfortaa; font-size: 14px; padding: 8px 12px; color: #000; border-radius: 12px; overflow-x: hidden; overflow-y: auto}
+
+	.alertbox {grid-column: 2/3;grid-row: 2/3}
+
+	.statusbox {grid-column: 1/3; grid-row: 3/4}
+	
+	.statusboxinner {margin: auto; font-size: 20px; font-weight: 800; margin: 28px; text-align: center}
+
+	.labelcommon{width: auto; height: 24px; padding: 2px 10px; grid-column: 1/2; grid-row: 1/2; top: -10px; left: 12px; position: absolute; display: block; background-color: rgba(255,255,255,0.80); border-radius: 10px; font-family: comfortaa; font-size: 18px; line-height: 24px}
+
+	.chatboxL {grid-column: 1/2; grid-row: 1/2}
+
+	.anonboxL {grid-column: 1/2; grid-row: 2/3}
+
+	.alertboxL {grid-column: 2/3; grid-row: 2/3}
+
+	.statusboxL {grid-column: 1/3; grid-row: 3/4}
+
+</style>
+	
+</head>
+	
+<body>
+	
+<div class="bodygrid" id="bodygrid">
+	
+	<div class="boxcommon chatbox" id="chatbox">
+		<div class="chatboxinner" id="chatboxinner">
+			
+		</div>
+	</div>
+	
+	<div class="labelcommon chatboxL" id="chatboxL">chat</div>
+	
+	<div class="boxcommon anonbox" id="anonbox">
+		<div class="anonboxinner" id="anonboxinner">
+		</div>
+	</div>
+	<div class="labelcommon anonboxL" id="anonboxL">anons</div>
+	
+	<!-- TO DO: Alert box functionality -->
+	<div class="boxcommon alertbox" id="alertbox"></div>
+	<div class="labelcommon alertboxL" id="alertboxL">alerts</div>
+	
+	
+	<div class="boxcommon statusbox" id="statusbox">
+		<div class="statusboxinner" id="statusboxinner">
+		</div>
+	</div>
+	<div class="labelcommon statusboxL" id="statusboxL">status</div>
+	
+</div>
+
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script>
+	
+const socket = io();
+const connarea = document.getElementById("statusboxinner");
+const chatjail = document.getElementById("chatboxinner");
+const anonjail = document.getElementById("anonboxinner");
+let messagecounter = 1;
+let anoncounter = 1;
+
+	
+//Connection Refresher
+socket.on("conn", (msg) => {
+	console.log("conn recieved");
+	connarea.innerHTML = "...checking...";
+	setTimeout(() => {  connarea.innerHTML = "Ohhhh yes we're live :3"; }, 1500);
+});
+
+
+//Function to Construct Message
+function newchat(username, userpronouns, message, chatno){
+	const item = document.createElement('div');
+    chatjail.appendChild(item);
+	item.classList.add("chatboxitem");
+	item.setAttribute("id", chatno);
+	item.appendChild(document.createElement('div'));
+	item.childNodes[0].setAttribute("id", ("user" + chatno));
+	item.childNodes[0].classList.add("chatboxitemname");
+	item.childNodes[0].classList.add("chatboxitemnamec2");
+	if (userpronouns != "") {
+		item.childNodes[0].innerHTML = "<span class='namespan'>" + username + "</span> - <span class='pronounspan'>" + userpronouns + "</span>";
+	} else {
+		item.childNodes[0].innerHTML = "<span class='namespan'>" + username + " </span>";
+	}
+	item.appendChild(document.createElement('div'));
+	item.childNodes[1].setAttribute("id", ("msg" + chatno));
+	item.childNodes[1].classList.add("chatboxitemtext");
+	item.childNodes[1].innerHTML = message;
+	chatjail.innerHTML += "<br>";
+}
+
+
+//For Chat Messages Recieved - Add 'em to chat jail
+socket.on("chatter", (msg) => {
+	console.log("chat recieved");
+	const username = msg[0];
+	const userpronouns = msg[1];
+	const message = msg[2];
+	messagecounter++;
+	const chatno = "chat" + String(messagecounter);
+	newchat(username, userpronouns, message, chatno);
+    chatjail.scrollTo(0, chatjail.scrollHeight);
+});
+
+	
+//Function to Construct Anon
+function newanon(anonname, message, anonno){
+	const item = document.createElement('div');
+    anonjail.appendChild(item);
+	item.classList.add("chatboxitem");
+	item.setAttribute("id", anonno);
+	item.appendChild(document.createElement('div'));
+	item.childNodes[0].setAttribute("id", ("user" + anonno));
+	item.childNodes[0].classList.add("chatboxitemname");
+	item.childNodes[0].classList.add("chatboxitemnamec4");
+	item.childNodes[0].innerHTML = "<span class='namespan'>" + anonname + "</span>";
+	item.appendChild(document.createElement('div'));
+	item.childNodes[1].setAttribute("id", ("msg" + anonno));
+	item.childNodes[1].classList.add("anonboxitemtext");
+	if (anonname[0] === "SYSTEM"){
+		item.classList.add("chatboxitemnamec3");
+	}
+	item.childNodes[1].innerHTML = message;
+	anonjail.innerHTML += "<br>";
+}
+	
+
+//For Anon Messages Recieved - Add 'em to anon jail
+socket.on("anons", (msg) => {
+	console.log("anon recieved");
+	const anonname = msg[0];
+	const message = msg[1];
+	messagecounter++;
+	const anonno = "anon" + String(messagecounter);
+	newanon(anonname, message, anonno);
+    anonjail.scrollTo(0, anonjail.scrollHeight);
+});
+	
+	
+</script>
+	
+</body>
+</html>
