@@ -293,3 +293,4 @@
 	//
 	//Connecting for Whispers
 	chatClient.connect();
+	
