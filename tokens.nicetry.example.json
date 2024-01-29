@@ -6,6 +6,7 @@
         "channel:moderate",
         "chat:edit",
         "chat:read",
+        "moderation:read",
         "whispers:edit",
         "whispers:read"
     ],
