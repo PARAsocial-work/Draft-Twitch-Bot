@@ -31,7 +31,6 @@ const sampleStrings = [
     "SrDzZujgnH",
 ]
 
-const randomString = (len) => randomBytes(len).toString('hex')
 const isBetween = (val, {min, max}) => val >= min && val <= max
 const resultInBounds = ({a, b, c}) => {
     assert.equal(isBetween(a, ranges.a), true)
@@ -39,28 +38,20 @@ const resultInBounds = ({a, b, c}) => {
     assert.equal(isBetween(c, ranges.c), true)
 }
 
-it("runs", () => {
+describe ("indexes for constant strings", () => {
+    it("runs", () => {
     assert.ok(generateIndexes("1"))
+    })
+
+    it("generates values in bound for sample strings", () => {
+        const generatedKeys = sampleStrings
+            .map(x => generateIndexes(x))
+        generatedKeys.forEach(x => resultInBounds(x))
+    })
 })
 
-it("generates values in bound for sample strings", () => {
-    const generatedKeys = sampleStrings
-        .map(x => generateIndexes(x))
-    console.log(generatedKeys)
-    generatedKeys.forEach(x => resultInBounds(x))
-})
-
-const randomStrings = Array.from(Array(100).keys())
-    .map(x => randomString(x))
-const generatedKeys = randomStrings
-    .map(x => generateIndexes(x))
-
-it("generates values in bound for 100 random strings", () => {
-    generatedKeys.forEach(x => resultInBounds(x))
-})
-
+const randomString = (len) => randomBytes(len).toString('hex')
 const numCompare = (a, b) => a - b;
-
 const arrayEvenSpread = (array, { min, max }) => {
     const sum = array.reduce((acc, x) => acc += x, 0)
     const average = sum / array.length
@@ -74,11 +65,22 @@ const arrayEvenSpread = (array, { min, max }) => {
     }
 }
 
-it("shows you how sussy the spread is", () => {
-    const arrayA = generatedKeys.map(x => x.a)
-    console.log(arrayA.toSorted(numCompare))
-    const arrayB = generatedKeys.map(x => x.b)
-    console.log(arrayB.toSorted(numCompare))
-    const arrayC = generatedKeys.map(x => x.c)
-    console.log(arrayC.toSorted(numCompare))
+describe("indexes for random strings", () => {
+    const randomStrings = Array.from(Array(100).keys())
+        .map(x => randomString(x))
+    const generatedKeys = randomStrings
+        .map(x => generateIndexes(x))
+
+    it("generates values in bound for 100 random strings", () => {
+        generatedKeys.forEach(x => resultInBounds(x))
+    })
+
+    it("shows you how sussy the spread is", () => {
+        const arrayA = generatedKeys.map(x => x.a)
+        const arrayB = generatedKeys.map(x => x.b)
+        const arrayC = generatedKeys.map(x => x.c)
+        // console.log(arrayA.toSorted(numCompare))
+        // console.log(arrayB.toSorted(numCompare))
+        // console.log(arrayC.toSorted(numCompare))
+    })
 })
