@@ -88,7 +88,7 @@
 //(Note - I checked with Alejo via his discord and confirmed consent to do this, and he requested pronouns are saved for ~5 minute period to minimize requests)
 
 	//Possible Pronouns
-	const pronounlist = [{"name":"aeaer","display":"Ae/Aer"},{"name":"any","display":"Any"},{"name":"eem","display":"E/Em"},{"name":"faefaer","display":"Fae/Faer"},{"name":"hehim","display":"He/Him"},{"name":"heshe","display":"He/She"},{"name":"hethem","display":"He/They"},{"name":"itits","display":"It/Its"},{"name":"other","display":"Other"},{"name":"perper","display":"Per/Per"},{"name":"sheher","display":"She/Her"},{"name":"shethem","display":"She/They"},{"name":"theythem","display":"They/Them"},{"name":"vever","display":"Ve/Ver"},{"name":"xexem","display":"Xe/Xem"},{"name":"ziehir","display":"Zie/Hir"}];
+	const pronounList = [{"name":"aeaer","display":"Ae/Aer"},{"name":"any","display":"Any"},{"name":"eem","display":"E/Em"},{"name":"faefaer","display":"Fae/Faer"},{"name":"hehim","display":"He/Him"},{"name":"heshe","display":"He/She"},{"name":"hethem","display":"He/They"},{"name":"itits","display":"It/Its"},{"name":"other","display":"Other"},{"name":"perper","display":"Per/Per"},{"name":"sheher","display":"She/Her"},{"name":"shethem","display":"She/They"},{"name":"theythem","display":"They/Them"},{"name":"vever","display":"Ve/Ver"},{"name":"xexem","display":"Xe/Xem"},{"name":"ziehir","display":"Zie/Hir"}];
 
 	//Storing Pronouns for 5 mins before removing them
 	const savedUserPronouns = new Map();
@@ -114,10 +114,10 @@
 				// If pronouns assigned
 				if (JSON.parse(JSON.stringify(json))[0] != undefined){
 					const pronounraw = JSON.parse(JSON.stringify(json))[0].pronoun_id;
-					for (let i = 0; i < pronounlist.length; i++){
+					for (let i = 0; i < pronounList.length; i++){
                         		//If they've assigned pronouns, store them locally for a while to reduce traffic to alejo's website
-						if (pronounlist[i].name === pronounraw){
-							var userpronouns = pronounlist[i].display;
+						if (pronounList[i].name === pronounraw){
+							var userpronouns = pronounList[i].display;
 							savedUserPronouns.set(x, {"pronouns":pronounraw,"display":pronounList[i].display});
 			                        	//Expiring local storage of their pronoun after 5 minutes
 			                        	setTimeout(() => {
