@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <link rel="shortcut icon" href="#">
 <title>Browser Source</title>
-	
 
 <!-- Stylesheet didnt work so pasting style in here -->
 <style>
@@ -27,11 +26,13 @@
 	.chatboxitemnamec3{background-color: #87779e}
 	.chatboxitemnamec4{background-color: #50495a}
 
+	.chatboxitemwhitetext{color: #fff}
+
 	.namespan{padding: 0px 6px}
 
 	.pronounspan{line-height: 22px; font-weight: 400; font-size: 14px; padding: 0px 6px 0px 0px}
 
-	.chatboxitemtext{position: relative; max-width: 89%; min-width: 80%; left: 7%; top: 12px; height: auto; grid-row: 2 / 4; grid-column: 1 / 3; background-color: #fff; font-family: comfortaa; font-size: 14px; padding: 8px 12px; color: #000; border-radius: 6px; overflow-x: hidden; overflow-y: auto}
+	.chatboxitemtext{position: relative; max-width: 89%; min-width: 80%; left: 6%; top: 12px; height: auto; grid-row: 2 / 4; grid-column: 1 / 3; background-color: #fff; font-family: comfortaa; font-size: 14px; padding: 8px 12px; color: #000; border-radius: 6px; overflow-x: hidden; overflow-y: auto}
  
 	.anonbox {grid-column: 1/2; grid-row: 2/3}
 
@@ -92,95 +93,96 @@
 
 
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+
 <script>
-	
-const socket = io();
-const connarea = document.getElementById("statusboxinner");
-const chatjail = document.getElementById("chatboxinner");
-const anonjail = document.getElementById("anonboxinner");
-let messagecounter = 1;
-let anoncounter = 1;
+		
+	const socket = io();
+	const connarea = document.getElementById("statusboxinner");
+	const chatjail = document.getElementById("chatboxinner");
+	const anonjail = document.getElementById("anonboxinner");
+	let messagecounter = 1;
+	let anoncounter = 1;
 
-	
-//Connection Refresher
-socket.on("conn", (msg) => {
-	console.log("conn recieved");
-	connarea.innerHTML = "...checking...";
-	setTimeout(() => {  connarea.innerHTML = "Ohhhh yes we're live :3"; }, 1500);
-});
+	//
+	//Connection Refresher
+	socket.on("conn", (msg) => {
+		console.log("conn recieved");
+		connarea.innerHTML = "...checking...";
+		setTimeout(() => {  connarea.innerHTML = "Ohhhh yes we're live :3"; }, 1500);
+	});
 
-
-//Function to Construct Message
-function newchat(username, userpronouns, message, chatno){
-	const item = document.createElement('div');
-    chatjail.appendChild(item);
-	item.classList.add("chatboxitem");
-	item.setAttribute("id", chatno);
-	item.appendChild(document.createElement('div'));
-	item.childNodes[0].setAttribute("id", ("user" + chatno));
-	item.childNodes[0].classList.add("chatboxitemname");
-	item.childNodes[0].classList.add("chatboxitemnamec2");
-	if (userpronouns != "") {
-		item.childNodes[0].innerHTML = "<span class='namespan'>" + username + "</span> - <span class='pronounspan'>" + userpronouns + "</span>";
-	} else {
-		item.childNodes[0].innerHTML = "<span class='namespan'>" + username + " </span>";
+	//
+	//Function to Construct Message
+	function newchat(username, userpronouns, message, chatno){
+		const item = document.createElement('div');
+		chatjail.appendChild(item);
+		item.classList.add("chatboxitem");
+		item.setAttribute("id", chatno);
+		item.appendChild(document.createElement('div'));
+		item.childNodes[0].setAttribute("id", ("user" + chatno));
+		item.childNodes[0].classList.add("chatboxitemname");
+		item.childNodes[0].classList.add("chatboxitemnamec2");
+		if (userpronouns != "") {
+			item.childNodes[0].innerHTML = "<span class='namespan'>" + username + "</span> - <span class='pronounspan'>" + userpronouns + "</span>";
+		} else {
+			item.childNodes[0].innerHTML = "<span class='namespan'>" + username + " </span>";
+		}
+		item.appendChild(document.createElement('div'));
+		item.childNodes[1].setAttribute("id", ("msg" + chatno));
+		item.childNodes[1].classList.add("chatboxitemtext");
+		item.childNodes[1].innerHTML = message;
+		chatjail.innerHTML += "<br>";
 	}
-	item.appendChild(document.createElement('div'));
-	item.childNodes[1].setAttribute("id", ("msg" + chatno));
-	item.childNodes[1].classList.add("chatboxitemtext");
-	item.childNodes[1].innerHTML = message;
-	chatjail.innerHTML += "<br>";
-}
 
+	//
+	//For Chat Messages Recieved - Add 'em to chat jail
+	socket.on("chatter", (msg) => {
+		console.log("chat recieved");
+		const username = msg[0];
+		const userpronouns = msg[1];
+		const message = msg[2];
+		messagecounter++;
+		const chatno = "chat" + String(messagecounter);
+		newchat(username, userpronouns, message, chatno);
+		chatjail.scrollTo(0, chatjail.scrollHeight);
+	});
 
-//For Chat Messages Recieved - Add 'em to chat jail
-socket.on("chatter", (msg) => {
-	console.log("chat recieved");
-	const username = msg[0];
-	const userpronouns = msg[1];
-	const message = msg[2];
-	messagecounter++;
-	const chatno = "chat" + String(messagecounter);
-	newchat(username, userpronouns, message, chatno);
-    chatjail.scrollTo(0, chatjail.scrollHeight);
-});
-
-	
-//Function to Construct Anon
-function newanon(anonname, message, anonno){
-	const item = document.createElement('div');
-    anonjail.appendChild(item);
-	item.classList.add("chatboxitem");
-	item.setAttribute("id", anonno);
-	item.appendChild(document.createElement('div'));
-	item.childNodes[0].setAttribute("id", ("user" + anonno));
-	item.childNodes[0].classList.add("chatboxitemname");
-	item.childNodes[0].classList.add("chatboxitemnamec4");
-	item.childNodes[0].innerHTML = "<span class='namespan'>" + anonname + "</span>";
-	item.appendChild(document.createElement('div'));
-	item.childNodes[1].setAttribute("id", ("msg" + anonno));
-	item.childNodes[1].classList.add("anonboxitemtext");
-	if (anonname[0] === "SYSTEM"){
-		item.classList.add("chatboxitemnamec3");
+	//
+	//Function to Construct Anon
+	function newanon(anonname, message, anonno){
+		const item = document.createElement('div');
+		anonjail.appendChild(item);
+		item.classList.add("chatboxitem");
+		item.setAttribute("id", anonno);
+		item.appendChild(document.createElement('div'));
+		item.childNodes[0].setAttribute("id", ("user" + anonno));
+		item.childNodes[0].classList.add("chatboxitemname");
+		item.childNodes[0].classList.add("chatboxitemnamec4");
+		item.childNodes[0].innerHTML = "<span class='namespan'>" + anonname + "</span>";
+		item.appendChild(document.createElement('div'));
+		item.childNodes[1].setAttribute("id", ("msg" + anonno));
+		item.childNodes[1].classList.add("anonboxitemtext");
+		if (anonname === "SYSTEM"){
+			item.childNodes[1].classList.add("chatboxitemnamec3");
+			item.childNodes[1].classList.add("chatboxitemwhitetext");
+		}
+		item.childNodes[1].innerHTML = message;
+		anonjail.innerHTML += "<br>";
 	}
-	item.childNodes[1].innerHTML = message;
-	anonjail.innerHTML += "<br>";
-}
-	
+		
+	//
+	//For Anon Messages Recieved - Add 'em to anon jail
+	socket.on("anons", (msg) => {
+		console.log("anon recieved");
+		const anonname = msg[0];
+		const message = msg[1];
+		messagecounter++;
+		const anonno = "anon" + String(messagecounter);
+		newanon(anonname, message, anonno);
+		anonjail.scrollTo(0, anonjail.scrollHeight);
+	});
 
-//For Anon Messages Recieved - Add 'em to anon jail
-socket.on("anons", (msg) => {
-	console.log("anon recieved");
-	const anonname = msg[0];
-	const message = msg[1];
-	messagecounter++;
-	const anonno = "anon" + String(messagecounter);
-	newanon(anonname, message, anonno);
-    anonjail.scrollTo(0, anonjail.scrollHeight);
-});
-	
-	
 </script>
-	
+
 </body>
 </html>
