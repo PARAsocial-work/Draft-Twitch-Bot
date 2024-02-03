@@ -11,6 +11,16 @@
 	import { dirname, join } from 'node:path';
 	import { generateIndexes } from './src/hash.js';
 
+	//Bot 1 - PSW_anons
+	import { authProvider, chatClient } from './src/bot1con.js';
+	import { autoMessage1 } from './src/bot1ops.js';
+	import { readChat } from './src/chatlog.js';
+	import { messy } from './src/whisperlog.js';
+
+	//Bot 2 - PSWbot
+	import { chatClientB } from './src/bot2con.js';
+	import { autoMessage2 } from './src/bot2ops.js';
+
 //
 //Data Containers
 	export const tonightsanons = new Map();
@@ -68,9 +78,9 @@
 	
 //
 //What to do on Whisper
-chatClient.onWhisper((user, text, message) => {
-	messy(user,text);
-});
+	chatClient.onWhisper((user, text, message) => {
+		messy(user,text);
+	});
 
 //
 //Open Connections
