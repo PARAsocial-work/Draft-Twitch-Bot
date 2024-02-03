@@ -1,11 +1,11 @@
+//Imports 
 import * as crypto from "crypto";
 
-/**
- * 
- * @param {string} x the username we're hashing 
- * @returns 
- */
+// Salting, Hashing, and Constructing Anonymized Usernames
 export function generateIndexes(x) {
+
+	//Scattered Salt
+	var x = pocketSalt(x);
 
 	//
 	//Hash it - secret placeholder only
@@ -28,6 +28,15 @@ export function generateIndexes(x) {
 	return {a, b, c}
 }
 
+function pocketSalt(string) {
+	const partOne = string.slice(0, string.length / 2)
+	const partTwo = string.slice(string.length / 2, string.length)
+	const saltPt1 = "0Q5A";
+	const saltPt2 = "ANR";
+	const saltPt3 = "7U1J";
+	return (saltPt1 + partOne + saltPt2 + partTwo + saltPt3);
+}
+
 function hash(x) {
 	return new Buffer(
 		crypto.createHmac('SHA256', '123456').update(x).digest('hex')
@@ -43,7 +52,10 @@ function removeNonAlphabet(hashed) {
 	};
 	return hashed;
 }
-
+function isEven(n) {
+	return n % 2 == 0;
+ }
+ 
 function toNumberValue(hashed) {
 	const lowercaseWord = hashed.toLowerCase();
 	const getLetterValue = letter => {
@@ -59,8 +71,18 @@ function toNumberValue(hashed) {
 }
 
 function parseCryptoIndex(numbervalue) {
-	const a = parseInt(numbervalue[24]) + parseInt(numbervalue[1]) + parseInt(numbervalue[75]);
-	const b = (parseInt(numbervalue[2]) + parseInt(numbervalue[9]) + parseInt(numbervalue[16]) + parseInt(numbervalue[23]) + parseInt(numbervalue[38]) + parseInt(numbervalue[43]) + parseInt(numbervalue[59]) + parseInt(numbervalue[64]) + parseInt(numbervalue[71]) + parseInt(numbervalue[80]) + parseInt(numbervalue[87]));
+	if (isEven(parseInt(numbervalue[14]))){
+		var a = (parseInt(numbervalue[17]) + parseInt(numbervalue[61]) + parseInt(numbervalue[28]));
+	} else {
+		var a = (parseInt(numbervalue[23]) + parseInt(numbervalue[36]) + parseInt(numbervalue[7]) + parseInt(numbervalue[68]));
+	};
+
+	if (isEven(parseInt(numbervalue[14]))){
+		var b = (parseInt(numbervalue[2]) + parseInt(numbervalue[9]) + parseInt(numbervalue[16]) + parseInt(numbervalue[33]) + parseInt(numbervalue[43]) + parseInt(numbervalue[59]) + parseInt(numbervalue[64]) + parseInt(numbervalue[68]) + parseInt(numbervalue[71]) + parseInt(numbervalue[80]));
+	} else {
+		var b = (parseInt(numbervalue[4]) + parseInt(numbervalue[24]) + parseInt(numbervalue[27]) + parseInt(numbervalue[34]) + parseInt(numbervalue[36]) + parseInt(numbervalue[39]) + parseInt(numbervalue[42]) + parseInt(numbervalue[51]) + parseInt(numbervalue[58]) + parseInt(numbervalue[63]) + parseInt(numbervalue[69]) + parseInt(numbervalue[70]) + parseInt(numbervalue[74]) + parseInt(numbervalue[79]) + parseInt(numbervalue[81]) + parseInt(numbervalue[88]));
+	};
+	
 	return { a, b };
 }
 
