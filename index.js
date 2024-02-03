@@ -1,17 +1,7 @@
 //Importing
 
-	//Authoriser and Easy Bot Twurple Imports for oAuth tokens and basic chatbot functionality 
-	import { RefreshingAuthProvider } from '@twurple/auth';
+	//Twurple
 	import { Bot, createBotCommand } from '@twurple/easy-bot';
-	import { WhisperEvent } from '@twurple/easy-bot';
-	import { DataObject, rawDataSymbol, rtfm } from '@twurple/common';
-	import { ChatClient, ChatUser } from '@twurple/chat';
-
-	//Needed FS to effectively fetch pronouns
-	import { promises as fs } from 'fs';
-	const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-	//Crypto (*booo*) for hashing (*yaaay*) 
 
 	//Express for http requests
 	import express from "express";
@@ -22,13 +12,17 @@
 	import { generateIndexes } from './src/hash.js';
 
 //
-//
+//Data Containers
+	export const tonightsanons = new Map();
+	export const spamwarning = new Map();
+	export const mutedanons = [];
+
 //
 //Opening App + Socket to pass information to the browser page 
 	const __dirname = dirname(fileURLToPath(import.meta.url));
 	const app = express();
 	const server = createServer(app);
-	const io = new Server(server);
+	export const io = new Server(server);
 
 	app.get('/', (req, res) => {
 		res.sendFile(join(__dirname, '/client/browser.html'));
@@ -38,51 +32,6 @@
 		console.log("We're golden")
 	);
 
-//
-//
-//
-//Connecting Bot
-
-	//Authorisation Token + Refresher
-	const clientId = 'nicetry000000';
-	const clientSecret = 'nicetry000000';
-	const tokenData = JSON.parse(await fs.readFile('./tokens.xyz.json', 'UTF-8'));
-	const authProvider = new RefreshingAuthProvider(
-		{
-			clientId,
-			clientSecret
-		}
-	);
-	authProvider.onRefresh(async (userId, newTokenData) => await fs.writeFile(`./tokens.nicetry.json`, JSON.stringify(newTokenData, null, 4), 'UTF-8'));
-	await authProvider.addUserForToken(tokenData, ['chat']);
-
-	//Connecting to Chat
-	const chatClient = new ChatClient({ authProvider, channels: ['parasocial_work'] });
-
-//
-//
-//
-//Automated Message Explaining Bot Functionality 
-
-	//Announces on entry
-	chatClient.onConnect(() => {
-		chatClient.say("parasocial_work", ("If you want to message (quasi-)anonymously, whisper me: the PSW_anons bot. Please check the 'Anon Messages' section below for details."));
-		//Then announces every 20 minutes while connected
-		const twentymins = (20*(60 * 1000));
-		setInterval(function() {
-    		chatClient.say("parasocial_work", ("If you want to message (quasi-)anonymously, whisper me: the PSW_anons bot. Please check the 'Anon Messages' section below for details."));
-		}, twentymins);
-		//Browser Socket Connection Confirmation 
-		io.emit("conn", "Connected");
-			//Refreshes connection indicator every 5 mins
-			setInterval(function() {
-				console.log(`We're STILL golden`);
-				io.emit("conn", "Connected");
-			}, 100000)
-	});
-
-//
-//
 //
 //Pronouns + Reading Chat
 //(Note - I checked with Alejo via his discord and confirmed consent to do this, and he requested pronouns are saved for ~5 minute period to minimize requests)
@@ -143,8 +92,6 @@
 	});
 
 //
-//
-//
 // Muting Anons
 // thought it'd be prudent to give mods the power to mute an anon
 	
@@ -168,13 +115,9 @@
 	]});
 
 //
-//
-//
 //Checking If Caught In Automod Function
 	//PLACEHOLDER 
 
-//
-//
 //
 //Handling Whispers
 	//Holder for anons that have chatted already (will make sense below)
@@ -290,6 +233,7 @@
 		messy(user,text);
 	});
 
-	//
-	//Connecting for Whispers
-	chatClient.connect();
+//
+//Open Connections
+chatClient.connect();
+chatClientB.connect();
